@@ -1,1 +1,507 @@
-# reverse-calculator
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverse Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glitch {
+            animation: glitch 0.3s ease-in-out;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        .picture-bounce {
+            animation: pictureShow 0.8s ease-out;
+        }
+        @keyframes pictureShow {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.3) rotate(-10deg); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.2) rotate(5deg); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) rotate(0deg); 
+            }
+        }
+        .sound-effect {
+            animation: soundBounce 1.2s ease-out;
+        }
+        @keyframes soundBounce {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.1) rotate(-20deg); 
+            }
+            30% { 
+                opacity: 1; 
+                transform: scale(1.3) rotate(10deg); 
+            }
+            60% { 
+                opacity: 1; 
+                transform: scale(0.9) rotate(-5deg); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) rotate(0deg); 
+            }
+        }
+        .screen-shake {
+            animation: shake 0.6s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10% { transform: translateX(-10px) rotate(1deg); }
+            20% { transform: translateX(10px) rotate(-1deg); }
+            30% { transform: translateX(-8px) rotate(1deg); }
+            40% { transform: translateX(8px) rotate(-1deg); }
+            50% { transform: translateX(-6px) rotate(1deg); }
+            60% { transform: translateX(6px) rotate(-1deg); }
+            70% { transform: translateX(-4px) rotate(1deg); }
+            80% { transform: translateX(4px) rotate(-1deg); }
+            90% { transform: translateX(-2px) rotate(1deg); }
+        }
+        .flash-bg {
+            animation: flashColors 0.8s ease-in-out;
+        }
+        @keyframes flashColors {
+            0% { background: linear-gradient(135deg, #dc2626, #ea580c, #d97706); }
+            25% { background: linear-gradient(135deg, #7c3aed, #2563eb, #0891b2); }
+            50% { background: linear-gradient(135deg, #059669, #65a30d, #ca8a04); }
+            75% { background: linear-gradient(135deg, #c2410c, #dc2626, #be123c); }
+            100% { background: linear-gradient(135deg, #dc2626, #ea580c, #d97706); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-red-600 via-orange-600 to-yellow-700 flex items-center justify-center p-4">
+    <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20">
+        <div class="w-80">
+            <!-- Title -->
+            <h1 class="text-white text-2xl font-bold text-center mb-2">🤪 Chaos Calculator</h1>
+            <p class="text-white/80 text-sm text-center mb-6">Warning: This calculator has trust issues with math!</p>
+            
+            <!-- Chaos Mode Toggle -->
+            <div class="mb-4">
+                <button id="chaosToggle" onclick="toggleChaos()" class="w-full bg-red-500/80 hover:bg-red-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">
+                    🔥 Chaos Mode: ON
+                </button>
+            </div>
+            
+            <!-- Display -->
+            <div class="bg-black/20 rounded-2xl p-6 mb-6 backdrop-blur-sm">
+                <div id="display" class="text-right text-white text-3xl font-medium min-h-[40px] break-all">0</div>
+                <div id="operation" class="text-right text-white/60 text-sm mt-1 min-h-[20px]"></div>
+                <div id="wrongnessLevel" class="text-right text-red-400 text-xs mt-2">Wrongness Level: 🔥🔥🔥</div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="grid grid-cols-4 gap-3">
+                <!-- Row 1 -->
+                <button onclick="clearAll()" class="bg-red-500/80 hover:bg-red-500 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">AC</button>
+                <button onclick="clearEntry()" class="bg-orange-500/80 hover:bg-orange-500 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">CE</button>
+                <button onclick="deleteLast()" class="bg-orange-500/80 hover:bg-orange-500 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">⌫</button>
+                <button onclick="inputOperator('/')" class="bg-purple-500/80 hover:bg-purple-500 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">÷</button>
+                
+                <!-- Row 2 -->
+                <button onclick="inputNumber('7')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">7</button>
+                <button onclick="inputNumber('8')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">8</button>
+                <button onclick="inputNumber('9')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">9</button>
+                <button onclick="inputOperator('*')" class="bg-purple-500/80 hover:bg-purple-500 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">×</button>
+                
+                <!-- Row 3 -->
+                <button onclick="inputNumber('4')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">4</button>
+                <button onclick="inputNumber('5')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">5</button>
+                <button onclick="inputNumber('6')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">6</button>
+                <button onclick="inputOperator('-')" class="bg-purple-500/80 hover:bg-purple-500 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">−</button>
+                
+                <!-- Row 4 -->
+                <button onclick="inputNumber('1')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">1</button>
+                <button onclick="inputNumber('2')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">2</button>
+                <button onclick="inputNumber('3')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">3</button>
+                <button onclick="inputOperator('+')" class="bg-purple-500/80 hover:bg-purple-500 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">+</button>
+                
+                <!-- Row 5 -->
+                <button onclick="inputNumber('0')" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 col-span-2">0</button>
+                <button onclick="inputDecimal()" class="bg-gray-700/80 hover:bg-gray-700 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">.</button>
+                <button onclick="performCalculation()" class="bg-green-500/80 hover:bg-green-500 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95">=</button>
+            </div>
+            
+            <!-- Funny Picture Display -->
+            <div id="funnyPicture" class="text-center text-6xl mt-4 min-h-[80px] transition-all duration-500 opacity-0 scale-50"></div>
+            
+            <!-- Visual Sound Effects -->
+            <div id="soundEffect" class="text-center text-4xl font-bold mt-2 min-h-[50px] transition-all duration-500 opacity-0 scale-50"></div>
+            
+            <!-- Fun Messages -->
+            <div id="funMessage" class="text-center text-white/80 text-sm mt-2 min-h-[20px]"></div>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let operation = document.getElementById('operation');
+        let wrongnessLevel = document.getElementById('wrongnessLevel');
+        let funMessage = document.getElementById('funMessage');
+        let chaosToggle = document.getElementById('chaosToggle');
+        let funnyPicture = document.getElementById('funnyPicture');
+        let soundEffect = document.getElementById('soundEffect');
+        
+        let currentInput = '0';
+        let previousInput = '';
+        let operator = '';
+        let waitingForOperand = false;
+        let chaosMode = true;
+        
+        const funMessages = [
+            "Math is just a suggestion anyway! 🤷‍♂️",
+            "Trust me, I'm a calculator! 😏",
+            "Numbers are overrated! ✨",
+            "Why be right when you can be creative? 🎨",
+            "I failed math class on purpose! 📚",
+            "Chaos is more fun than order! 🌪️",
+            "Who needs accuracy? 🎯",
+            "I'm artistically interpreting your math! 🎭"
+        ];
+
+        const funnyPictures = [
+            "🤡", "🤪", "🙃", "😵‍💫", "🤯", "😱", "🤢", "🤮",
+            "🤠", "🤓", "😎", "🥸", "🤖", "👽", "👻", "💀",
+            "🙈", "🙉", "🙊", "🐒", "🦄", "🐸", "🐙", "🦀",
+            "🍕", "🌮", "🍔", "🍰", "🎂", "🍭", "🍩", "🧁",
+            "💩", "🔥", "⚡", "💥", "🌪️", "🌈", "⭐", "✨"
+        ];
+
+        const pictureMessages = [
+            "Behold, the face of wrong math!",
+            "This is what happens to numbers!",
+            "Math.exe has stopped working!",
+            "Your calculation summoned this!",
+            "The math gods are not pleased!",
+            "Error 404: Logic not found!",
+            "Congratulations, you broke math!",
+            "This is mathematically impossible!"
+        ];
+
+        const soundEffects = [
+            "💥 KABOOM!",
+            "🎵 BOING!",
+            "⚡ ZAP!",
+            "💢 CRASH!",
+            "🔥 WHOOSH!",
+            "✨ DING!",
+            "🌪️ SWOOSH!",
+            "💫 POOF!",
+            "🎯 THUNK!",
+            "🎪 TADA!",
+            "🚨 BEEP!",
+            "🎭 HONK!",
+            "🎨 SPLAT!",
+            "🎪 BONK!",
+            "⭐ PING!"
+        ];
+
+        const soundColors = [
+            "text-red-400",
+            "text-yellow-400", 
+            "text-blue-400",
+            "text-green-400",
+            "text-purple-400",
+            "text-pink-400",
+            "text-orange-400",
+            "text-cyan-400"
+        ];
+
+        function updateDisplay() {
+            display.textContent = currentInput;
+            if (operator && previousInput) {
+                operation.textContent = `${previousInput} ${getOperatorSymbol(operator)}`;
+            } else {
+                operation.textContent = '';
+            }
+        }
+
+        function getOperatorSymbol(op) {
+            switch(op) {
+                case '+': return '+';
+                case '-': return '−';
+                case '*': return '×';
+                case '/': return '÷';
+                default: return op;
+            }
+        }
+
+        function showFunnyPicture() {
+            const randomPicture = funnyPictures[Math.floor(Math.random() * funnyPictures.length)];
+            const randomMessage = pictureMessages[Math.floor(Math.random() * pictureMessages.length)];
+            
+            // Show the picture with animation
+            funnyPicture.textContent = randomPicture;
+            funnyPicture.classList.remove('picture-bounce');
+            funnyPicture.style.opacity = '1';
+            funnyPicture.style.transform = 'scale(1)';
+            
+            // Add bounce animation
+            setTimeout(() => {
+                funnyPicture.classList.add('picture-bounce');
+            }, 10);
+            
+            // Show message
+            funMessage.textContent = randomMessage;
+            
+            // Hide after 4 seconds
+            setTimeout(() => {
+                funnyPicture.style.opacity = '0';
+                funnyPicture.style.transform = 'scale(0.5)';
+                funMessage.textContent = '';
+            }, 4000);
+        }
+
+        function showSoundEffect() {
+            const randomSound = soundEffects[Math.floor(Math.random() * soundEffects.length)];
+            const randomColor = soundColors[Math.floor(Math.random() * soundColors.length)];
+            
+            // Show sound effect with animation
+            soundEffect.textContent = randomSound;
+            soundEffect.className = `text-center text-4xl font-bold mt-2 min-h-[50px] transition-all duration-500 ${randomColor}`;
+            soundEffect.classList.remove('sound-effect');
+            soundEffect.style.opacity = '1';
+            soundEffect.style.transform = 'scale(1)';
+            
+            // Add bounce animation
+            setTimeout(() => {
+                soundEffect.classList.add('sound-effect');
+            }, 10);
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                soundEffect.style.opacity = '0';
+                soundEffect.style.transform = 'scale(0.5)';
+            }, 3000);
+        }
+
+        function addScreenShake() {
+            document.body.classList.add('screen-shake');
+            setTimeout(() => {
+                document.body.classList.remove('screen-shake');
+            }, 600);
+        }
+
+        function addBackgroundFlash() {
+            document.body.classList.add('flash-bg');
+            setTimeout(() => {
+                document.body.classList.remove('flash-bg');
+            }, 800);
+        }
+
+        function addHapticFeedback() {
+            // Add vibration for mobile devices
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100, 50, 200]);
+            }
+        }
+
+        function toggleChaos() {
+            chaosMode = !chaosMode;
+            chaosToggle.textContent = chaosMode ? '🔥 Chaos Mode: ON' : '😇 Normal Mode: ON';
+            chaosToggle.className = chaosMode ? 
+                'w-full bg-red-500/80 hover:bg-red-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95' :
+                'w-full bg-green-500/80 hover:bg-green-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95';
+            
+            wrongnessLevel.textContent = chaosMode ? 'Wrongness Level: 🔥🔥🔥' : 'Wrongness Level: 😇';
+            funMessage.textContent = chaosMode ? 'Prepare for mathematical mayhem!' : 'Being good... for now.';
+            
+            // Hide picture and sound effects when switching modes
+            funnyPicture.style.opacity = '0';
+            funnyPicture.style.transform = 'scale(0.5)';
+            soundEffect.style.opacity = '0';
+            soundEffect.style.transform = 'scale(0.5)';
+        }
+
+        function inputNumber(num) {
+            if (waitingForOperand) {
+                currentInput = num;
+                waitingForOperand = false;
+            } else {
+                currentInput = currentInput === '0' ? num : currentInput + num;
+            }
+            updateDisplay();
+        }
+
+        function inputDecimal() {
+            if (waitingForOperand) {
+                currentInput = '0.';
+                waitingForOperand = false;
+            } else if (currentInput.indexOf('.') === -1) {
+                currentInput += '.';
+            }
+            updateDisplay();
+        }
+
+        function inputOperator(nextOperator) {
+            const inputValue = parseFloat(currentInput);
+
+            if (previousInput === '') {
+                previousInput = inputValue;
+            } else if (operator) {
+                const currentValue = previousInput || 0;
+                const newValue = chaosMode ? calculateWrong(currentValue, inputValue, operator) : calculateCorrect(currentValue, inputValue, operator);
+
+                currentInput = String(newValue);
+                previousInput = newValue;
+            }
+
+            waitingForOperand = true;
+            operator = nextOperator;
+            updateDisplay();
+        }
+
+        function calculateCorrect(firstOperand, secondOperand, operator) {
+            switch (operator) {
+                case '+':
+                    return firstOperand + secondOperand;
+                case '-':
+                    return firstOperand - secondOperand;
+                case '*':
+                    return firstOperand * secondOperand;
+                case '/':
+                    return firstOperand / secondOperand;
+                default:
+                    return secondOperand;
+            }
+        }
+
+        function calculateWrong(firstOperand, secondOperand, operator) {
+            // Add some glitch effect
+            display.classList.add('glitch');
+            setTimeout(() => display.classList.remove('glitch'), 300);
+            
+            const chaos = Math.random();
+            
+            // 30% chance to completely ignore the operation and return random number
+            if (chaos < 0.3) {
+                const randomResults = [42, 69, 420, 1337, 9001, 3.14159, 2.71828, 666, 777, 123.456];
+                return randomResults[Math.floor(Math.random() * randomResults.length)];
+            }
+            
+            // 20% chance to swap the operation
+            if (chaos < 0.5) {
+                const operations = ['+', '-', '*', '/'];
+                const randomOp = operations[Math.floor(Math.random() * operations.length)];
+                return calculateCorrect(firstOperand, secondOperand, randomOp);
+            }
+            
+            // 20% chance to modify the numbers slightly
+            if (chaos < 0.7) {
+                const modifier1 = 0.8 + Math.random() * 0.4; // 0.8 to 1.2
+                const modifier2 = 0.8 + Math.random() * 0.4;
+                return calculateCorrect(firstOperand * modifier1, secondOperand * modifier2, operator);
+            }
+            
+            // 15% chance to return the reverse operation
+            if (chaos < 0.85) {
+                return calculateCorrect(secondOperand, firstOperand, operator);
+            }
+            
+            // 15% chance to add/subtract a random number to the correct result
+            const correctResult = calculateCorrect(firstOperand, secondOperand, operator);
+            const randomOffset = (Math.random() - 0.5) * 20; // -10 to +10
+            return correctResult + randomOffset;
+        }
+
+        function performCalculation() {
+            const inputValue = parseFloat(currentInput);
+
+            if (previousInput !== '' && operator) {
+                const newValue = chaosMode ? calculateWrong(previousInput, inputValue, operator) : calculateCorrect(previousInput, inputValue, operator);
+                
+                currentInput = String(Math.round(newValue * 100) / 100); // Round to 2 decimal places
+                previousInput = '';
+                operator = '';
+                waitingForOperand = true;
+                
+                if (chaosMode) {
+                    // Trigger all the chaos effects!
+                    showFunnyPicture();
+                    showSoundEffect();
+                    addScreenShake();
+                    addBackgroundFlash();
+                    addHapticFeedback();
+                } else {
+                    // Show normal success message
+                    funMessage.textContent = 'Calculation complete! ✅';
+                    setTimeout(() => {
+                        funMessage.textContent = '';
+                    }, 2000);
+                }
+                
+                updateDisplay();
+            }
+        }
+
+        function clearAll() {
+            currentInput = '0';
+            previousInput = '';
+            operator = '';
+            waitingForOperand = false;
+            funMessage.textContent = '';
+            funnyPicture.style.opacity = '0';
+            funnyPicture.style.transform = 'scale(0.5)';
+            soundEffect.style.opacity = '0';
+            soundEffect.style.transform = 'scale(0.5)';
+            updateDisplay();
+        }
+
+        function clearEntry() {
+            currentInput = '0';
+            updateDisplay();
+        }
+
+        function deleteLast() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            
+            if (key >= '0' && key <= '9') {
+                inputNumber(key);
+            } else if (key === '.') {
+                inputDecimal();
+            } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                inputOperator(key);
+            } else if (key === 'Enter' || key === '=') {
+                event.preventDefault();
+                performCalculation();
+            } else if (key === 'Escape') {
+                clearAll();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            }
+        });
+
+        // Initialize
+        updateDisplay();
+        funMessage.textContent = 'Ready to break some math! 🔥';
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968c45ea473849a6',t:'MTc1NDEyNDA1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
